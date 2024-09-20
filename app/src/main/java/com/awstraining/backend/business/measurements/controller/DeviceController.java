@@ -34,9 +34,16 @@ class DeviceController implements DeviceIdApi {
     }
     @Override
     public ResponseEntity<Measurement> publishMeasurements(final String deviceId, final Measurement measurement) {
+                String methodName = new Object(){}.getClass().getEnclosingMethod().getName();
+
+        Counter counter = Counter
+        .builder("retrieveMeasurements.counter")
+        .tag("method", methodName)
+        .register(meterRegistry);
         LOGGER.info("Publishing measurement for device '{}'", deviceId);
         final MeasurementDO measurementDO = fromMeasurement(deviceId, measurement);
         service.saveMeasurement(measurementDO);
+        counter.increment();
         return ResponseEntity.ok(measurement);
     }
     @Override
