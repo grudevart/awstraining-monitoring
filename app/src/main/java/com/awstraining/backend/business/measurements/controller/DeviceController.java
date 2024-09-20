@@ -4,6 +4,9 @@ import static java.lang.System.currentTimeMillis;
 
 import java.util.List;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+
 import com.awstraining.backend.api.rest.v1.DeviceIdApi;
 import com.awstraining.backend.api.rest.v1.model.Measurement;
 import com.awstraining.backend.api.rest.v1.model.Measurements;
@@ -22,12 +25,13 @@ class DeviceController implements DeviceIdApi {
     private static final Logger LOGGER = LogManager.getLogger(DeviceController.class);
 
     private final MeasurementService service;
+    private final MeterRegistry meterRegistry;
 
     @Autowired
-    public DeviceController(final MeasurementService service) {
+    public DeviceController(final MeasurementService service, MeterRegistry meterRegistry) {
         this.service = service;
+        this.meterRegistry = meterRegistry;
     }
-
     @Override
     public ResponseEntity<Measurement> publishMeasurements(final String deviceId, final Measurement measurement) {
         LOGGER.info("Publishing measurement for device '{}'", deviceId);
@@ -37,6 +41,13 @@ class DeviceController implements DeviceIdApi {
     }
     @Override
     public ResponseEntity<Measurements> retrieveMeasurements(final String deviceId) {
+        String methodName = new Object(){}.getClass().getEnclosingMethot().getName();
+
+        Counter counter = Counter
+        .builder("retrieveMeasurements.counter")
+        .tag("method", retrieveMeasurements)
+        .register(meterRegistry)
+
         LOGGER.info("Retrieving all measurements for device '{}'", deviceId);
         final List<Measurement> measurements = service.getMeasurements()
                 .stream()
@@ -46,6 +57,7 @@ class DeviceController implements DeviceIdApi {
                 LOGGER.info("Size:  {}", size);
         final Measurements measurementsResult = new Measurements();
         measurementsResult.measurements(measurements);
+        counter.increment();
         return ResponseEntity.ok(measurementsResult);
     }
 
