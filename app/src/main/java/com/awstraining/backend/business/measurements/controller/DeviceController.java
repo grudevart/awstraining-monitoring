@@ -37,7 +37,7 @@ class DeviceController implements DeviceIdApi {
                 String methodName = new Object(){}.getClass().getEnclosingMethod().getName();
 
         Counter counter = Counter
-        .builder("retrieveMeasurements.counter")
+        .builder("publishMeasurements.counter")
         .tag("method", methodName)
         .register(meterRegistry);
         LOGGER.info("Publishing measurement for device '{}'", deviceId);
