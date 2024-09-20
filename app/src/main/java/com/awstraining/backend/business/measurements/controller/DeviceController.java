@@ -41,7 +41,7 @@ class DeviceController implements DeviceIdApi {
     }
     @Override
     public ResponseEntity<Measurements> retrieveMeasurements(final String deviceId) {
-        String methodName = new Object(){}.getClass().getEnclosingMethot().getName();
+        String methodName = new Object(){}.getClass().getEnclosingMethod().getName();
 
         Counter counter = Counter
         .builder("retrieveMeasurements.counter")
