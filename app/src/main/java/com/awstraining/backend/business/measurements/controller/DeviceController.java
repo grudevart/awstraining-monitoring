@@ -45,7 +45,7 @@ class DeviceController implements DeviceIdApi {
 
         Counter counter = Counter
         .builder("retrieveMeasurements.counter")
-        .tag("method", retrieveMeasurements)
+        .tag("method", methodName)
         .register(meterRegistry);
 
         LOGGER.info("Retrieving all measurements for device '{}'", deviceId);
